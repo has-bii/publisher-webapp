@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('body');
             $table->bigInteger('sender_id')->unsigned();
             $table->bigInteger('parent_id')->unsigned()->nullable();
+            $table->tinyInteger('is_seen')->default(false);
 
-            $table->timestamp('send_date');
             $table->softDeletes();
             $table->timestamps();
         });

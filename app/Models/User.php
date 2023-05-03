@@ -66,14 +66,14 @@ class User extends Authenticatable
         return $this->belongsToMany(Publisher::class);
     }
 
+    public function message_receiver()
+    {
+        return $this->hasMany(MessageReceiver::class, 'receiver_id');
+    }
+
     public function message()
     {
         return $this->hasMany(Message::class, 'sender_id');
-    }
-
-    public function messageReciever()
-    {
-        return $this->hasMany(MessageReciever::class, 'reciever_id');
     }
 
     public function role()

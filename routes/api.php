@@ -3,9 +3,13 @@
 use App\Http\Controllers\API\AnnouncementController;
 use App\Http\Controllers\API\ContentController;
 use App\Http\Controllers\API\EditorController;
+use App\Http\Controllers\API\GenreController;
+use App\Http\Controllers\API\MessageController;
 use App\Http\Controllers\API\PublisherController;
+use App\Http\Controllers\API\TypeController;
 use App\Http\Controllers\API\UserController;
 use App\Models\Announcement;
+use App\Models\Genre;
 use App\Models\Publisher;
 use Database\Seeders\EditorPublisher;
 use Illuminate\Http\Request;
@@ -51,4 +55,23 @@ Route::prefix('content')->middleware('auth:sanctum')->name('content')->group(fun
     Route::get('', [ContentController::class, 'fetch'])->name('fetch');
     Route::post('', [ContentController::class, 'create'])->name('create');
     Route::post('update/{id}', [ContentController::class, 'update'])->name('update');
+});
+
+Route::prefix('genre')->middleware('auth:sanctum')->name('genre')->group(function () {
+    Route::get('', [GenreController::class, 'fetch'])->name('fetch');
+    Route::post('', [GenreController::class, 'create'])->name('create');
+    Route::post('update/{id}', [GenreController::class, 'update'])->name('update');
+});
+
+Route::prefix('type')->middleware('auth:sanctum')->name('type')->group(function () {
+    Route::get('', [TypeController::class, 'fetch'])->name('fetch');
+    Route::post('', [TypeController::class, 'create'])->name('create');
+    Route::post('update/{id}', [TypeController::class, 'update'])->name('update');
+});
+
+Route::prefix('message')->middleware('auth:sanctum')->name('message')->group(function () {
+    Route::get('', [MessageController::class, 'my_message'])->name('my_message');
+    Route::post('', [MessageController::class, 'send_message'])->name('send_message');
+    Route::get('get-message', [MessageController::class, 'get_message'])->name('get_message');
+    Route::get('open-message', [MessageController::class, 'open_message'])->name('open-message');
 });

@@ -12,7 +12,7 @@ class MessageReceiver extends Model
     use HasFactory;
 
     protected $fillable = [
-        'reciever_id',
+        'receiver_id',
         'message_id',
     ];
 

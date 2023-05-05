@@ -33,7 +33,7 @@ Route::name('auth.')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout', [UserController::class, 'logout'])->name('logout');
         Route::post('update', [UserController::class, 'update'])->name('update');
-        Route::get('fetch', [UserController::class, 'fetch'])->name('fetch');
+        Route::get('user', [UserController::class, 'fetch'])->name('fetch');
     });
 });
 

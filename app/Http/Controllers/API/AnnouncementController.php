@@ -18,7 +18,7 @@ class AnnouncementController extends Controller
     {
         $today = Carbon::today();
 
-        $announcements = Announcement::with('content')->whereDate('created_at', '>=', $today)->get();
+        $announcements = Announcement::select('*', Announcement::raw('DATE_FORMAT(announcements.created_at, "%d-%m-%Y") as created_date'), Announcement::raw('SUBSTRING(body, 1, 350) as short_body',))->with('content.publisher')->orderBy('created_at', 'desc')->get();
 
         return ResponseFormatter::success($announcements, 'Announcements found');
     }

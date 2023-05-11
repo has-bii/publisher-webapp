@@ -24,6 +24,8 @@ class ContentController extends Controller
         $type_id = $request->input('type_id');
         $genre_id = $request->input('genre_id');
         $author_id = $request->input('author_id');
+        $genre_id = $request->input('genre_id');
+        $status_id = $request->input('status_id');
         $publisher_id = $request->input('publisher_id');
         $published_date = $request->input('published_date');
         $limit = $request->input('limit', 100);
@@ -48,6 +50,10 @@ class ContentController extends Controller
 
         if ($genre_id) {
             $contents->where('genre_id', $genre_id);
+        }
+
+        if ($status_id) {
+            $contents->where('status_id', $status_id);
         }
 
         if ($author_id) {

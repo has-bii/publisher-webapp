@@ -9,6 +9,7 @@ use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateTypeRequest;
 use App\Http\Requests\UpdateTypeRequest;
+use App\Models\Genre;
 
 class TypeController extends Controller
 {
@@ -60,6 +61,34 @@ class TypeController extends Controller
 
             return ResponseFormatter::success($type, 'Type updated');
         } catch (Exception $error) {
+            return ResponseFormatter::error($error->getMessage());
+        }
+    }
+
+    public function delete($id)
+    {
+
+        try {
+
+            if ($id) {
+
+                $type = Type::find($id);
+
+                if (!$type) {
+                    throw new Exception('Type not found');
+                }
+
+                $genres = Genre::where('type_id', $id);
+
+                $genres->delete();
+
+                $type->delete();
+
+
+                return ResponseFormatter::success('', 'Content deleted');
+            }
+        } catch (Exception $error) {
+
             return ResponseFormatter::error($error->getMessage());
         }
     }

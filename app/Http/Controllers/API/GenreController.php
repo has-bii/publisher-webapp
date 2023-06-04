@@ -18,7 +18,7 @@ class GenreController extends Controller
         $type_id = $request->input('type_id');
         $limit = $request->input('limit', 20);
 
-        $genres = Genre::with('type');
+        $genres = Genre::with('type')->orderBy('type_id', 'asc');
 
         if ($type_id) {
             $genres->where('type_id', $type_id);
@@ -63,6 +63,29 @@ class GenreController extends Controller
 
             return ResponseFormatter::success($genre, 'Genre updated');
         } catch (Exception $error) {
+            return ResponseFormatter::error($error->getMessage());
+        }
+    }
+
+    public function delete($id)
+    {
+
+        try {
+
+            if ($id) {
+
+                $genre = Genre::find($id);
+
+                if (!$genre) {
+                    throw new Exception('genre not found');
+                }
+
+                $genre->delete();
+
+                return ResponseFormatter::success('', 'Genre deleted');
+            }
+        } catch (Exception $error) {
+
             return ResponseFormatter::error($error->getMessage());
         }
     }

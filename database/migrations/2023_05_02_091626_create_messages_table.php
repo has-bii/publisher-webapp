@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('body');
             $table->bigInteger('sender_id')->unsigned();
-            $table->bigInteger('parent_id')->unsigned()->nullable();
-            $table->tinyInteger('is_seen')->default(false);
+            $table->bigInteger('receiver_id')->unsigned();
+            $table->enum('is_seen', ['true', 'false']);
 
             $table->softDeletes();
             $table->timestamps();

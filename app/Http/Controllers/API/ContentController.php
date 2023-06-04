@@ -12,25 +12,41 @@ use Exception;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ContentController extends Controller
 {
     public function fetch(Request $request)
     {
 
+        $id = $request->input('id');
         $name = $request->input('name');
         $price_below = $request->input('price_below');
         $price_above = $request->input('price_above');
         $type_id = $request->input('type_id');
         $genre_id = $request->input('genre_id');
+        $author_name = $request->input('author_name');
         $author_id = $request->input('author_id');
+        $editor_name = $request->input('editor_name');
+        $editor_id = $request->input('editor_id');
         $genre_id = $request->input('genre_id');
         $status_id = $request->input('status_id');
         $publisher_id = $request->input('publisher_id');
         $published_date = $request->input('published_date');
         $limit = $request->input('limit', 100);
 
-        $contents = Content::with('type', 'user_author', 'user_editor', 'publisher', 'genre', 'status');
+        $contents = Content::with('type', 'author', 'editor', 'publisher', 'genre', 'status');
+
+        if ($id) {
+            $content = $contents->find($id);
+
+            if (!$content) {
+
+                return ResponseFormatter::error('Content not found!');
+            }
+
+            return ResponseFormatter::success($content, 'Content fetched success');
+        }
 
         if ($name) {
             $contents->where('name', 'like', '%' . $name . '%');
@@ -60,7 +76,26 @@ class ContentController extends Controller
             $contents->where('author_id', $author_id);
         }
 
-        if ($publisher_id) {
+        if ($author_name) {
+            $contents->whereHas('author', function ($query) use ($author_name) {
+                $query->where('name', 'like', '%' . $author_name . '%');
+            });
+        }
+
+        if ($editor_id) {
+            $contents->where('editor_id', $editor_id);
+        }
+
+        if ($editor_name) {
+            $contents->whereHas('editor', function ($query) use ($editor_name) {
+                $query->where('name', 'like', '%' . $editor_name . '%');
+            });
+        }
+
+        if ($publisher_id == 'untaken') {
+
+            $contents->whereNULL('publisher_id');
+        } else if ($publisher_id) {
             $contents->where('publisher_id', $publisher_id);
         }
 
@@ -77,16 +112,30 @@ class ContentController extends Controller
         try {
 
             if ($request->hasFile('cover')) {
-                $cover = $request->file('cover')->store('public/covers');
+                $coverFile = $request->file('cover');
+
+                $fileName = $coverFile->getClientOriginalName();
+                $publicPath = public_path('storage/covers/');
+
+                $coverFile->move($publicPath, $fileName);
+
+                $cover = $fileName;
             }
 
             if ($request->hasFile('file')) {
-                $file = $request->file('file')->store('public/files');
+                $contentFile = $request->file('file');
+
+                $fileName = $contentFile->getClientOriginalName();
+                $publicPath = public_path('storage/files/');
+
+                $contentFile->move($publicPath, $fileName);
+
+                $file = $fileName;
             }
 
             $content = Content::create([
                 'name' => $request->name,
-                'cover' => isset($cover) ? $cover : '',
+                'cover' => isset($cover) ? $cover : 'dummy-cover.jpg',
                 'price' => null,
                 'file' => $file,
                 'type_id' => $request->type_id,
@@ -118,11 +167,25 @@ class ContentController extends Controller
             }
 
             if ($request->hasFile('cover')) {
-                $cover = $request->file('cover')->store('public/covers');
+                $coverFile = $request->file('cover');
+
+                $fileName = $coverFile->getClientOriginalName();
+                $publicPath = public_path('storage/covers/');
+
+                $coverFile->move($publicPath, $fileName);
+
+                $cover = $fileName;
             }
 
             if ($request->hasFile('file')) {
-                $file = $request->file('file')->store('public/files');
+                $contentFile = $request->file('file');
+
+                $fileName = $contentFile->getClientOriginalName();
+                $publicPath = public_path('storage/files/');
+
+                $contentFile->move($publicPath, $fileName);
+
+                $file = $fileName;
             }
 
             $content->update([
@@ -136,10 +199,42 @@ class ContentController extends Controller
                 'author_id' => isset($request->author_id) ? $request->author_id : $content->author_id,
                 'publisher_id' => isset($request->publisher_id) ? $request->publisher_id : $content->publisher_id,
                 'status_id' => isset($request->status_id) ? $request->status_id : $content->status_id,
+                'published_date' => isset($request->published_date) ? $request->published_date : $content->published_date,
             ]);
 
             return ResponseFormatter::success($content, 'content updated');
         } catch (Exception $error) {
+            return ResponseFormatter::error($error->getMessage());
+        }
+    }
+
+    public function delete(Request $request)
+    {
+
+        try {
+
+            $id = $request->input('id');
+
+            if ($id) {
+
+                $content = Content::find($id);
+
+                if (!$content) {
+                    throw new Exception('Content not found');
+                }
+
+                if ($content->cover) {
+                    Storage::delete('public/covers/' . $content->cover);
+                }
+
+                Storage::delete('public/files/' . $content->file);
+
+                $content->delete();
+
+                return ResponseFormatter::success('', 'Content deleted');
+            }
+        } catch (Exception $error) {
+
             return ResponseFormatter::error($error->getMessage());
         }
     }

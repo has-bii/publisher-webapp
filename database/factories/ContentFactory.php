@@ -18,15 +18,16 @@ class ContentFactory extends Factory
     {
         return [
             'name' => $this->faker->words(2, true),
-            'cover' => $this->faker->imageUrl(480, 640, 'animals', true),
+            'cover' => 'dummy-cover.jpg',
             'price' => $this->faker->numerify('##'),
             'file' => null,
-            'type_id' => $this->faker->randomDigitNotNull(),
-            'author_id' => $this->faker->numberBetween(1, 20),
-            'status_id' => $this->faker->numberBetween(1, 4),
-            'publisher_id' => $this->faker->numberBetween(1, 10),
+            'type_id' => 3,
+            'genre_id' => $this->faker->numberBetween(6, 20),
+            'author_id' => $this->faker->numberBetween(1, 54),
+            'status_id' => 1,
+            'publisher_id' => null,
             'published_date' => null,
-            'upload_date' => now(),
+            'created_at' => now(),
         ];
     }
 }

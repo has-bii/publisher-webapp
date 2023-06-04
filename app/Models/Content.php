@@ -29,12 +29,12 @@ class Content extends Model
         return $this->belongsTo(Publisher::class);
     }
 
-    public function user_author()
+    public function author()
     {
         return $this->belongsTo(User::class, 'author_id');
     }
 
-    public function user_editor()
+    public function editor()
     {
         return $this->belongsTo(User::class, 'editor_id');
     }

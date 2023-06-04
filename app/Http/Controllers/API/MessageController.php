@@ -2,69 +2,106 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Helpers\ResponseFormatter;
-use App\Models\User;
+use Exception;
+use App\Models\Chat;
 use App\Models\Message;
 use Illuminate\Http\Request;
+use App\Helpers\ResponseFormatter;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\SendMessageRequest;
-use App\Models\MessageReceiver;
-use Exception;
-use GuzzleHttp\Psr7\Response;
+use App\Http\Requests\CreateChatRequest;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\CreateMessageRequest;
+use App\Models\Participant;
 
 class MessageController extends Controller
 {
-    public function my_message(Request $request)
+    public function fetch(Request $request)
     {
-        $limit = $request->input('limit', 100);
 
-        $messages = Message::where('sender_id', Auth::id())->with(['message_receiver', 'user']);
+        $chat_id = $request->input('chat_id');
 
-        return ResponseFormatter::success($messages->paginate($limit), 'Messages found');
+        $id = Auth::id();
+
+        $messages = Message::with('sender')->where('chat_id', $chat_id)->orderBy('created_at', 'desc')->get();
+
+
+        return ResponseFormatter::success($messages, 'Fetch success');
     }
 
-    public function send_message(SendMessageRequest $request)
+    public function new_message(CreateMessageRequest $request)
     {
+        if ($request->chat_id) {
+
+            try {
+
+                $message = Message::create([
+                    'message' => $request->message,
+                    'chat_id' => $request->chat_id,
+                    'sender_id' => $request->sender_id,
+                ]);
+
+                if (!$message) {
+                    throw new Exception('message not created');
+                }
+
+                $chat = Chat::find($request->chat_id);
+
+                $chat->update([
+                    'last_message_id' => $message->id
+                ]);
+
+                return ResponseFormatter::success($message, 'Message created');
+            } catch (Exception $error) {
+                return ResponseFormatter::error($error->getMessage());
+            }
+        }
+
+        return ResponseFormatter::error('No chat id selected');
+    }
+
+    public function new_chat(CreateChatRequest $request)
+    {
+
         try {
 
-            $message = Message::create([
-                'body' => $request->body,
-                'sender_id' => Auth::id(),
-                'parent_id' => isset($request->parent_id) ? $request->parent_id : null,
+            $chat = Chat::create();
+
+            $chat_id = $chat->id;
+
+            $receiver_id = $request->receiver_id;
+            $sender_id = Auth::id();
+
+            $sender = Participant::create([
+                'user_id' => $sender_id,
+                'chat_id' => $chat_id,
             ]);
 
-            $messageReceiver = MessageReceiver::create([
-                'receiver_id' => $request->receiver_id,
-                'message_id' => $message->id
+            $receiver = Participant::create([
+                'user_id' => $receiver_id,
+                'chat_id' => $chat_id,
             ]);
 
-            if (!$message && !$messageReceiver) {
-                throw new Exception('Message not sent');
+            if (!$receiver && !$sender) {
+                throw new Exception('Participants not created');
             }
 
-            return ResponseFormatter::success($message, 'Message sent');
+            $message = Message::create([
+                'message' => $request->message,
+                'chat_id' => $chat_id,
+                'sender_id' => $request->sender_id,
+            ]);
+
+            if (!$message) {
+                throw new Exception('message not created');
+            }
+
+            $chat->update([
+                'last_message_id' => $message->id
+            ]);
+
+            return ResponseFormatter::success($message, 'Message created');
         } catch (Exception $error) {
             return ResponseFormatter::error($error->getMessage());
         }
-    }
-
-    public function get_message(Request $request)
-    {
-        $limit = $request->input('limit', 100);
-
-        $messages = MessageReceiver::with('message')->where('receiver_id', Auth::id());
-
-        return ResponseFormatter::success($messages->paginate($limit), 'Messages found');
-    }
-
-    public function open_message(Request $request)
-    {
-        $limit = $request->input('limit', 100);
-        $sender_id = $request->input('sender_id');
-
-        $message = Message::where('sender_id', $sender_id)->where('parent_id', null)->with('message_parent');
-
-        return ResponseFormatter::success($message->paginate($limit), 'Messages found');
     }
 }

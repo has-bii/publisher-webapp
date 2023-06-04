@@ -23,4 +23,9 @@ class Publisher extends Model
     {
         return $this->hasMany(Content::class);
     }
+
+    public function announcement()
+    {
+        return $this->hasMany(Announcement::class);
+    }
 }

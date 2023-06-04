@@ -14,10 +14,16 @@ class Announcement extends Model
         'title',
         'body',
         'content_id',
+        'publisher_id'
     ];
 
     public function content()
     {
         return $this->belongsTo(Content::class);
+    }
+
+    public function publisher()
+    {
+        return $this->belongsTo(Publisher::class);
     }
 }

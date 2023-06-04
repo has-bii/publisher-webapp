@@ -33,6 +33,7 @@ class UpdateContentRequest extends FormRequest
             'author_id' => 'nullable|integer',
             'publisher_id' => 'nullable|integer',
             'status_id' => 'nullable|integer',
+            'published_date' => 'nullable|date_format:Y-m-d H:i:s'
         ];
     }
 }

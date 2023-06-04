@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('announcements', function (Blueprint $table) {
+        Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('body');
-            $table->bigInteger('content_id')->unsigned();
-            $table->bigInteger('publisher_id')->unsigned();
-            $table->timestamp('published_date')->nullable();
+            $table->text('message');
+            $table->bigInteger('chat_id')->unsigned();
+            $table->bigInteger('sender_id')->unsigned();
 
-            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('announcements');
+        Schema::dropIfExists('messages');
     }
 };

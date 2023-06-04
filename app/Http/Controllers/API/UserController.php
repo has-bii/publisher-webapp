@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
 use Laravel\Fortify\Rules\Password;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdatePhotoRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -61,7 +62,9 @@ class UserController extends Controller
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make($request->password)
+                'password' => Hash::make($request->password),
+                'photo' => 'profile_dummy.png',
+                'role_id' => 3,
             ]);
 
             // Generate token
@@ -94,15 +97,58 @@ class UserController extends Controller
         return ResponseFormatter::success($user, 'Fetch Success');
     }
 
+    public function fetch_users(Request $request)
+    {
+        $id = $request->input('id');
+        $name = $request->input('name');
+        $email = $request->input('email');
+        $role_id = $request->input('role_id');
+        $order_by = $request->input('order_by', 'asc');
+        $notUser = $request->input('not_user');
+        $limit = $request->input('limit', 100);
+
+        $users = User::with('role')->orderBy('name', $order_by);
+
+        // Single Fetch
+        if ($id) {
+            $user = $users->with('publishers')->find($id);
+
+            if (!$user) {
+                return ResponseFormatter::error('Data not found!');
+            }
+
+            return ResponseFormatter::success($user, 'Fetch success');
+        }
+
+        if ($notUser) {
+            $users = User::query()->whereNot('id', $notUser)->with('role')->orderBy('name', $order_by);
+        }
+
+        if ($name) {
+            $users->where('name', 'like', '%' . $name . '%');
+        }
+
+        if ($email) {
+            $users->where('name', 'like', '%' . $email . '%');
+        }
+
+        if ($role_id) {
+            $role_id = explode(',', $role_id);
+
+            $users->whereIn('role_id', $role_id);
+        }
+
+        return ResponseFormatter::success($users->paginate($limit), 'Fetch success');
+    }
+
     public function update(Request $request)
     {
         try {
             $email = $request->input('email');
+            $phone = $request->input('phone');
 
-            // Get company
             $user = $request->user();
 
-            // Check if company exists
             if (!$user) {
                 throw new Exception('User not found');
             }
@@ -111,6 +157,57 @@ class UserController extends Controller
             $user->update([
                 'name' => $request->name,
                 'email' => isset($email) ? $email : $user->email,
+                'phone' => isset($phone) ? $phone : $user->phone,
+            ]);
+
+            return ResponseFormatter::success($user, 'User updated');
+        } catch (Exception $e) {
+            return ResponseFormatter::error($e->getMessage(), 500);
+        }
+    }
+
+    public function change_photo(UpdatePhotoRequest $request, $id)
+    {
+        try {
+            $photoFile = $request->file('photo');
+
+            $fileName = $photoFile->getClientOriginalName();
+            $publicPath = public_path('storage/photos/');
+
+            $photoFile->move($publicPath, $fileName);
+
+            $photo = $fileName;
+
+            $user = User::find($id);
+
+            if (!$user) {
+                throw new Exception('User not found');
+            }
+
+            $user->update([
+                'photo' => $photo
+            ]);
+
+            return ResponseFormatter::success($user, 'Photo changed');
+        } catch (Exception $e) {
+            return ResponseFormatter::error($e->getMessage());
+        }
+    }
+
+    public function update_user(Request $request, $id)
+    {
+        try {
+            $role_id = $request->input('role_id');
+
+            $user = User::find($id);
+
+            if (!$user) {
+                throw new Exception('User not found');
+            }
+
+            // Update user
+            $user->update([
+                'role_id' => $role_id,
             ]);
 
             return ResponseFormatter::success($user, 'User updated');

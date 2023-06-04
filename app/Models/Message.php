@@ -10,30 +10,23 @@ class Message extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'body',
-        'sender_id',
-        'parent_id',
-        'is_seen',
+        'message',
+        'chat_id',
+        'sender_id'
     ];
 
-    public function message_receiver()
+    public function chats()
     {
-        return $this->hasMany(MessageReceiver::class);
+        return $this->belongsTo(Chat::class, 'chat_id');
     }
 
-    public function user()
+    public function sender()
     {
         return $this->belongsTo(User::class, 'sender_id');
     }
 
-    public function message_child()
+    public function chat_last()
     {
-        return $this->belongsTo(Message::class, 'parent_id');
-    }
-
-    public function message_parent()
-    {
-        return $this->hasMany(Message::class, 'parent_id');
+        return $this->hasOne(Chat::class, 'last_message_id');
     }
 }

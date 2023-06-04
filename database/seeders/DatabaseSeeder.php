@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
 
         // Publisher::factory(10)->create();
 
-        // User::factory(20)->create();
+        // User::factory(50)->create();
 
         // Content::factory(20)->create();
 
@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
 
         // Genre::factory(9)->create();
 
-        Announcement::factory(10)->create();
+        // Announcement::factory(10)->create();
 
         // Message::factory(20)->create();
 

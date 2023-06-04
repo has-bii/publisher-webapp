@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
-class CreateAnnouncementRequest extends FormRequest
+class UpdatePhotoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,10 +23,7 @@ class CreateAnnouncementRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:255',
-            'body' => 'required|string',
-            'content_id' => 'required|integer',
-            'publisher_id' => 'required|integer',
+            'photo' => 'required|image|mimes:png,jpg,jpeg'
         ];
     }
 }

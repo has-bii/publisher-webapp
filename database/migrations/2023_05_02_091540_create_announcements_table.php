@@ -17,7 +17,6 @@ return new class extends Migration
             $table->text('body');
             $table->bigInteger('content_id')->unsigned();
             $table->bigInteger('publisher_id')->unsigned();
-            $table->timestamp('published_date')->nullable();
 
             $table->softDeletes();
             $table->timestamps();

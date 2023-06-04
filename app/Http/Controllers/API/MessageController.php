@@ -82,6 +82,8 @@ class MessageController extends Controller
             ]);
 
             if (!$receiver && !$sender) {
+                $chat->delete();
+
                 throw new Exception('Participants not created');
             }
 

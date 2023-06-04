@@ -20,8 +20,8 @@ return new class extends Migration
             $table->bigInteger('type_id')->unsigned();
             $table->bigInteger('genre_id')->unsigned();
             $table->bigInteger('author_id')->unsigned();
-            $table->bigInteger('editor_id')->unsigned();
-            $table->bigInteger('publisher_id')->unsigned();
+            $table->bigInteger('editor_id')->unsigned()->nullable();
+            $table->bigInteger('publisher_id')->unsigned()->nullable();
             $table->bigInteger('status_id')->unsigned();
 
             $table->timestamp('published_date')->nullable();

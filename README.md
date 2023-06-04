@@ -10,7 +10,7 @@ This repository is my own repository for Internet Based Programming lecture.
 
 What is Publisher web app? A web app that provides publishing management to help publishers, authors and editors, such as uploading various contents (novel, magazine, book, comic, etc) then publishers can accept then ask editors to edit it then published by the publishers.
 
-(Video presentation.)[https://youtu.be/h7n-zw2fbXk]
+[Video Presentation](https://youtu.be/h7n-zw2fbXk)
 
 ### Roles:
 

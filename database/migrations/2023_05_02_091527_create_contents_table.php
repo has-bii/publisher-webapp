@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('price')->nullable();
             $table->string('file')->nullable();
             $table->bigInteger('type_id')->unsigned();
+            $table->bigInteger('genre_id')->unsigned();
             $table->bigInteger('author_id')->unsigned();
             $table->bigInteger('editor_id')->unsigned();
             $table->bigInteger('publisher_id')->unsigned();

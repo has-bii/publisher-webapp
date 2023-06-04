@@ -19,11 +19,11 @@ return new class extends Migration
             $table->string('file')->nullable();
             $table->bigInteger('type_id')->unsigned();
             $table->bigInteger('author_id')->unsigned();
+            $table->bigInteger('editor_id')->unsigned();
             $table->bigInteger('publisher_id')->unsigned();
             $table->bigInteger('status_id')->unsigned();
 
             $table->timestamp('published_date')->nullable();
-            $table->timestamp('upload_date');
 
             $table->softDeletes();
             $table->timestamps();

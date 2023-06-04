@@ -14,25 +14,25 @@ What is Publisher web app? A web app that provides publishing management to help
 
 ### Roles:
 
-*Admin*
+**Admin**
 - User management
 - Type & Genre Management
 - Publishers Management
 
-*Publisher*
+**Publisher**
 - Publisher Resource Management
 - Contents Management
 - Create & Edit Announcements Management
 
-*Editor*
+**Editor**
 - Contents Management
 
-*Author*
+**Author**
 - Upload & Edit Contents
 
 ### Tech
-- *Laravel* (backend)
-- *NuxtJs* (frontend)
-- *mysql* (database)
-- *Bootstrap* (ui)
+- **Laravel** (backend)
+- **NuxtJs** (frontend)
+- **mysql** (database)
+- **Bootstrap** (ui)
 
